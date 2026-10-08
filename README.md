@@ -1,96 +1,184 @@
-# Automobile Data Analysis
+# Automobile Price Prediction and Analysis
 
-## Objective
-Analyze factors affecting price, fuel efficiency and vehicle performance using a historical automobile dataset.
+**Exploring the factors that influence automobile prices and using machine learning to estimate vehicle values.**
 
-## Description
-This project involves exploring and modeling a dataset containing specifications of various automobiles. The goal is to identify relationships between attributes like engine size, horsepower, and weight with miles-per-gallon (MPG), and to build predictive models to predict price based on the features.
+## Overview
 
-## Installation
-Install required libraries using pip:
+What makes one automobile more expensive than another? Is it engine size, horsepower, fuel efficiency, or a combination of several characteristics?
 
-```bash
-pip install pandas numpy matplotlib seaborn scikit-learn
-```
+This project explores these questions using historical automobile data. Through five Jupyter notebooks, I analyzed vehicle specifications, investigated relationships between automobile features and prices, and developed regression models to estimate vehicle values.
+
+The project follows a complete introductory data science workflow, from preparing raw data to evaluating and refining prediction models.
 
 ## Dataset
-- **Source:** Automobile Dataset  
-- **Content:** 200+ entries including features such as make, number of doors, body style, engine location, length, compression ratio, horsepower, peak-rpm, city mpg, highway mpg, horsepower-binned, and designation of diesel or gas.
 
-## Tools & Technologies
-You can install the required libraries using:
-```bash
-pip install pandas numpy matplotlib seaborn sklearn
-```
+The project uses the **Automobile dataset from the UCI Machine Learning Repository**, accessed through IBM's Data Analysis with Python coursework.
 
-## Methodology
-- **Data Cleaning:** Handled missing values and data type conversions.
-- **Exploratory Data Analysis (EDA):** Visualized distributions and correlations (e.g., weight vs. MPG).
-- **Feature Engineering:** Created new features and transformed categorical variables.
-- **Modeling:** Linear Regression and Multiple Linear Regression models were trained and evaluated.
-- **Evaluation:** Used R² score and RMSE to assess model performance.
+The original dataset contains **205 automobile records and 26 attributes**, including:
 
-## Insights Gained
-- As the engine-size goes up, the price goes up: this indicates a positive direct correlation between these two variables. Engine size seems like a pretty good predictor of price since the regression line is almost a perfect diagonal line.
+- **Price:** Automobile price, used as the prediction target
+- **Engine size:** Engine displacement
+- **Horsepower:** Engine power
+- **Curb weight:** Vehicle weight
+- **Highway MPG:** Highway fuel efficiency
+- **Body style and drive wheels:** Vehicle design and drivetrain characteristics
 
-![Alt text](images/5-enginesize-price-scatterplot.png)
+**Source:** [UCI Automobile Dataset](https://archive.ics.uci.edu/dataset/10/automobile)
 
-- As highway-mpg goes up, the price goes down: this indicates an inverse/negative relationship between these two variables. Highway mpg could potentially be a predictor of price.
+## Preparing the Data
 
-![Alt text](images/7-highwaympg-price-scatterplot.png)
+Before analyzing automobile prices, I worked through several data preparation steps to make the dataset suitable for statistical analysis and machine learning.
 
-- From our data, it seems rear-wheel drive vehicles are, on average, the most expensive, while 4-wheel and front-wheel are approximately the same in price.
+These included:
 
-![Alt text](images/17-averageprice-4wd-fwd-rwd.png)
+- Identifying and handling missing values
+- Correcting numerical data types
+- Removing records without valid price information
+- Normalizing selected numerical features
+- Creating horsepower categories
+- Encoding categorical variables for analysis
 
-- Since the p-value is $<$ 0.001, the correlation between wheel-base and price is statistically significant, although the linear relationship isn't extremely strong (~0.585).
+These transformations helped create a more consistent dataset for exploring relationships and developing regression models.
 
-![Alt text](images/24-p-value-of-wheelbase-and-price.png)
+## Exploring Automobile Prices
 
-- Since the p-value is $<$ 0.001, the correlation between horsepower and price is statistically significant, and the linear relationship is quite strong (~0.809, close to 1).
+### Engine Size and Price
 
-![Alt text](images/25-p-value-of-horsepower-and-price.png)
+One of the strongest relationships identified in the analysis was between engine size and automobile price.
 
-- Since the p-value is $<$ 0.001, the correlation between length and price is statistically significant, and the linear relationship is moderately strong (~0.691).
+![Engine Size vs. Automobile Price](images/5-enginesize-price-scatterplot.png)
 
-![Alt text](images/26-p-value-of-length-and-price.png)
+The scatterplot shows a clear positive relationship: vehicles with larger engines generally had higher prices.
 
-- Since the p-value is < 0.001, the correlation between width and price is statistically significant, and the linear relationship is quite strong (~0.751).
+The correlation coefficient between engine size and price was approximately **0.872**, making engine size one of the strongest individual predictors examined.
 
-![Alt text](images/27-p-value-of-width-and-price.png)
+### Fuel Efficiency and Price
 
-- Since the p-value is $<$ 0.001, the correlation between engine-size and price is statistically significant, and the linear relationship is very strong (~0.872).
+I also explored the relationship between highway fuel efficiency and automobile price.
 
-![Alt text](images/28-p-value-of-enginesize-and-price.png)
+![Highway MPG vs. Automobile Price](images/7-highwaympg-price-scatterplot.png)
 
-- Since the p-value is $<$ 0.001, the correlation between bore and price is statistically significant, but the linear relationship is only moderate (~0.521).
+The analysis revealed a negative relationship between highway MPG and price, with a correlation coefficient of approximately **-0.705**.
 
-![Alt text](images/29-p-value-of-bore-and-price.png)
+Within this dataset, vehicles with higher highway fuel efficiency generally tended to have lower prices.
 
-- Since the p-value is $<$ 0.001, the correlation between city-mpg and price is statistically significant, and the coefficient of about -0.687 shows that the relationship is negative and moderately strong.
+### Comparing Drive-Wheel Configurations
 
-![Alt text](images/30-p-value-of-citymph-and-price.png)
+To examine how vehicle design relates to price, I compared average automobile prices across different drive-wheel configurations.
 
-- Since the p-value is < 0.001, the correlation between highway-mpg and price is statistically significant, and the coefficient of about -0.705 shows that the relationship is negative and moderately strong.
+![Average Automobile Price by Drive-Wheel Configuration](images/17-averageprice-4wd-fwd-rwd.png)
 
-![Alt text](images/31-p-value-of-highwaymph-and-price.png)
+Rear-wheel-drive vehicles had the highest average prices in this dataset, while front-wheel-drive and four-wheel-drive vehicles showed lower averages.
 
-- The variable "highway-mpg" has a stronger correlation with "price", it is approximate -0.704692  compared to "peak-rpm" which is approximate -0.101616
+This comparison illustrates how categorical vehicle characteristics can be explored alongside numerical features.
 
-![Alt text](images/34-correlation-hwympg-peakrpm-and-price.png)
+## Identifying Important Price Factors
 
-- A residual is the difference between the observed value (y) and the predicted value (Yhat) is called the residual (e). When we look at a regression plot, the residual is the distance from the data point to the fitted regression line. If the points in a residual plot are <b>randomly spread out around the x-axis</b>, then a <b>linear model is appropriate</b> for the data. Randomly spread out residuals means that the variance is constant, and thus the linear model is a good fit for this data. We can see from this residual plot that the residuals are not randomly spread around the x-axis, leading us to believe that maybe a non-linear model is more appropriate for this data.
+Correlation analysis helped identify which numerical vehicle characteristics were most closely associated with automobile price.
 
-![Alt text](images/35-residualplot-variance-hwympg-price.png)
+| Vehicle characteristic | Correlation with price |
+|---|---:|
+| Engine size | 0.872 |
+| Curb weight | 0.834 |
+| Horsepower | 0.810 |
+| Vehicle width | 0.751 |
+| Highway MPG | -0.705 |
+| City MPG | -0.687 |
 
-- One way to look at the fit of the multiple linear regression model is by looking at the <b>distribution plot</b>. We can look at the distribution of the fitted values that result from the model and compare it to the distribution of the actual values.
+**Key takeaway:** Engine size, curb weight, and horsepower showed strong positive relationships with price, while fuel efficiency showed a negative relationship.
 
-![Alt text](images/36-actual-vs-predicted-values-distributionplot.png)
+These relationships describe patterns in the historical dataset and do not establish that the features independently cause price changes.
 
-- We saw earlier that a linear model did not provide the best fit while using "highway-mpg" as the predictor variable. Let's see if we can try fitting a polynomial model to the data instead.
+## Building Price Prediction Models
 
-![Alt text](images/37-polynomialfitting.png)
+After exploring the data, I developed several regression approaches to estimate automobile prices.
 
-- Comparing these three models, we conclude that <b>the MLR model is the best model</b> to be able to predict price from our dataset. This result makes sense since we have 27 variables in total and we know that more than one of those variables are potential predictors of the final car price
+**Simple Linear Regression**
 
-![Alt text](images/38-comparing-models.png)
+Used a single feature, such as highway MPG, to estimate automobile price.
+
+**Multiple Linear Regression**
+
+Combined horsepower, curb weight, engine size, and highway MPG to estimate price using multiple vehicle characteristics.
+
+**Polynomial Regression**
+
+Explored nonlinear relationships between automobile characteristics and price.
+
+These approaches provided an opportunity to compare how different model structures represent the relationships observed in the data.
+
+## Evaluating Model Performance
+
+I evaluated the regression models using two metrics:
+
+- **R² (Coefficient of Determination):** Measures how much variation in price is explained by the model.
+- **Mean Squared Error (MSE):** Measures the average squared difference between predicted and actual prices.
+
+### Actual vs. Predicted Prices
+
+![Actual vs. Predicted Automobile Prices](images/36-actual-vs-predicted-values-distributionplot.png)
+
+The distribution plot compares actual automobile prices with values estimated by the multiple linear regression model.
+
+This visualization helps illustrate how closely the model's predictions follow the observed price distribution.
+
+### Comparing Regression Models
+
+![Automobile Regression Model Comparison](images/38-comparing-models.png)
+
+The model development analysis reported the following results:
+
+| Model | R² | MSE |
+|---|---:|---:|
+| Simple Linear Regression | 0.497 | 31.6 million |
+| Multiple Linear Regression | 0.809 | 12.0 million |
+| Polynomial Regression | 0.674 | 20.5 million |
+
+Among these three approaches, **Multiple Linear Regression produced the strongest fit**, achieving the highest R² and lowest MSE.
+
+These results come from the model development exercises and should not be interpreted as independent test-set performance.
+
+## Model Refinement
+
+The final notebook explored additional techniques for evaluating and improving regression models.
+
+This included:
+
+- Splitting the dataset into training and testing sets
+- Comparing model performance on training and test data
+- Examining overfitting and underfitting
+- Exploring polynomial feature transformations
+- Applying Ridge regression
+- Using cross-validation and GridSearchCV for hyperparameter selection
+
+These exercises demonstrate why model evaluation should consider performance on unseen data rather than relying only on training results.
+
+## Technologies Used
+
+- **Python** — Data analysis and model development
+- **Pandas & NumPy** — Data preparation and numerical operations
+- **Matplotlib & Seaborn** — Statistical visualization
+- **SciPy** — Statistical analysis
+- **scikit-learn** — Regression modeling, evaluation, and hyperparameter tuning
+- **Jupyter Notebook** — Interactive analysis
+
+## Skills Demonstrated
+
+- Data cleaning and preprocessing
+- Missing-value handling
+- Feature engineering and encoding
+- Exploratory data analysis
+- Correlation analysis
+- Data visualization
+- Linear and polynomial regression
+- Model evaluation using R² and MSE
+- Training and testing workflows
+- Regularization and hyperparameter tuning
+
+## Project Context
+
+This project was completed through the **IBM Data Analysis with Python coursework**.
+
+The five notebooks document a guided, hands-on progression through data acquisition, preparation, exploratory analysis, model development, and model refinement.
+
+The project demonstrates foundational data science and machine learning techniques rather than a production-ready automobile valuation system.
